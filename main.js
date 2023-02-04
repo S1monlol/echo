@@ -5,7 +5,12 @@ const client = new Client({
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.Guilds,
 
-    ]
+    ],
+    allowedMentions: {
+       parse: [],
+       repliedUser: true,
+    }
+
 });
 
 

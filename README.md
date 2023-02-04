@@ -14,7 +14,7 @@ $ docker build . -t echo
 Next, you will need to create a .env file in the root directory of the project with the following contents:
 
 DISCORD_TOKEN=[your-discord-token] \
-OPENAI_API_KEY=[your-openai-api-key]
+OPEN_API_KEY=[your-openai-api-key]
 
 Finally, you can start the bot by running the following command:
 

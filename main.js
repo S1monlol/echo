@@ -73,11 +73,10 @@ client.on('messageCreate', async (message) => {
     // if the message mentions the bot, or is replying to the bot, then respond with the channel id
     if ((message.mentions.has(client.user.id) || message.reference?.messageID || message.content.toLowerCase().startsWith('echo:')) && !message.system) {
         console.log(message.author.username)
-        let msg = `
-            Respond Conversationally, the name of the person is bellow, the message is next to it. You dont need to say the name of the peson, but you can if it makes sense to, ie if they ask you what their name is.
-            ${message.author.username}: ${message.content}
-            Echo: 
-            `
+
+
+
+        let msg = `${message.content}`
 
         // make the bot start typing
 

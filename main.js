@@ -16,7 +16,10 @@ const client = new Client({
 client.whitelist = [];
 
 if (typeof process.env.WHITELIST !== "undefined") {
-    client.whitelist.push(process.env.WHITELIST.split(","));
+    process.env.WHITELIST.split(",").forEach((x) => {
+        client.whitelist.push(x);
+    })
+    
 }
 
 client.ignorelist = [];

@@ -81,7 +81,7 @@ client.on('messageCreate', async (message) => {
     if (!client.whitelist.includes(message.channelId)) return;
     if (client.ignorelist.includes(message.author.id)) return;
     // if the message mentions the bot, or is replying to the bot, then respond with the channel id
-    if ((message.mentions.has(client.user.id) || message.reference?.messageID || message.content.toLowerCase().startsWith('ohce:')) && !message.system) {
+    if ((message.mentions.has(client.user.id) || message.reference?.messageID || message.content.toLowerCase().startsWith('echo:')) && !message.system) {
         console.log(message.author.username)
         let msg;
         // if the message contains a link 

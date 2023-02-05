@@ -1,6 +1,11 @@
 import { Client, GatewayIntentBits } from 'discord.js';
 import { JSDOM as DOMParser } from 'jsdom';
 
+import {config} from "dotenv";
+
+// allow reading from a .env file
+config({});
+
 const client = new Client({
     intents: [
         GatewayIntentBits.MessageContent,

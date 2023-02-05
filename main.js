@@ -15,6 +15,10 @@ const client = new Client({
 });
 client.whitelist = [];
 
+if (typeof process.env.WHITELIST !== "undefined") {
+    client.whitelist.push(process.env.WHITELIST.split(","));
+}
+
 client.ignorelist = [];
 
 client.on('ready', async () => {
@@ -89,7 +93,7 @@ client.on('messageCreate', async (message) => {
         if (message.content.includes("ignore")) {
             client.ignorelist.push(message.mentions.users.first().id);
             return message.reply("User has been successfully ignored. Thanks for the alert.")
-        } else if (message.content.includes("unignore")) {
+        } else if (message.content.includes("unig")) {
             const index = client.ignorelist.indexOf(message.mentions.users.first().id);
             if (index > -1) { // only splice array when item is found
                 client.ignorelist.splice(index, 1); // 2nd parameter means remove one item only

@@ -13,6 +13,8 @@ RUN npm install
 # Copy the rest of the project files to the container
 COPY . .
 
+# Build the bot
+RUN "npm run build"
 
 # Specify the command to run when the container starts
 CMD ["npm", "start"]

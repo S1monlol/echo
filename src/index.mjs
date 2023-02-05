@@ -1,6 +1,11 @@
 import { Client, GatewayIntentBits } from 'discord.js';
 import { JSDOM as DOMParser } from 'jsdom';
 
+import {config} from "dotenv";
+
+// allow reading from a .env file
+config({});
+
 const client = new Client({
     intents: [
         GatewayIntentBits.MessageContent,
@@ -15,10 +20,20 @@ const client = new Client({
 });
 client.whitelist = [];
 
+if (typeof process.env.WHITELIST !== "undefined") {
+    process.env.WHITELIST.split(",").forEach((x) => {
+        client.whitelist.push(x);
+    })
+    
+}
+
+client.ignorelist = [];
+
 client.on('ready', async () => {
     console.log(`${client.user.username} is ready!`);
 
     // register slash commands
+    let currCommands = await client.application.commands.fetch();
     const data = [
         {
             name: 'resetcontext',
@@ -29,6 +44,10 @@ client.on('ready', async () => {
             description: 'whitelist the bot to a single channel',
         }
     ];
+    // TODO: add better registration logic 
+    if (currCommands !== [] || typeof currCommands !== "undefined") {
+        return
+    }
     const commands = await client.application?.commands.set(data);
     console.log(commands);
 });
@@ -72,15 +91,27 @@ client.on('interactionCreate', async (interaction) => {
 client.on('messageCreate', async (message) => {
     if (message.author.id == client.user.id) return;
     if (!client.whitelist.includes(message.channelId)) return;
+    if (client.ignorelist.includes(message.author.id)) return;
     // if the message mentions the bot, or is replying to the bot, then respond with the channel id
     if ((message.mentions.has(client.user.id) || message.reference?.messageID || message.content.toLowerCase().startsWith('echo:')) && !message.system) {
         console.log(message.author.username)
         let msg;
         // if the message contains a link 
+
+        if (message.content.includes("ignore")) {
+            client.ignorelist.push(message.mentions.users.first().id);
+            return message.reply("User has been successfully ignored. Thanks for the alert.")
+        } else if (message.content.includes("unig")) {
+            const index = client.ignorelist.indexOf(message.mentions.users.first().id);
+            if (index > -1) { // only splice array when item is found
+                client.ignorelist.splice(index, 1); // 2nd parameter means remove one item only
+                return message.reply("I've successfully unignored the user.")
+            }
+        }
         if (message.content.includes('nofetch')) {
             msg = `${message.content}`
         } else if (message.content.includes('http')) {
-            
+
             // get the link
             let link = message.content.match(/(https?:\/\/[^\s]+)/g);
             let content = await fetch(link[0])
@@ -103,21 +134,19 @@ client.on('messageCreate', async (message) => {
         }
 
         // make the bot start typing
-
         message.channel.sendTyping();
-        const response = await fetch(`https://chat.simo.ng/chat`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "message": msg,
-                conversationId: message.channel.id
-            })
-        }
-        )
-
         try {
+            const response = await fetch(`https://chat.simo.ng/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "message": msg,
+                    conversationId: message.channel.id
+                }),
+            });
+
             const data = await response.json()
             const removeCommasFromStart = str => str.replace(/^,+/, "");
 
@@ -128,6 +157,7 @@ client.on('messageCreate', async (message) => {
             message.reply(`Something went wrong, please dont do that again. \n ${e}`)
         }
     }
+
 });
 
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;

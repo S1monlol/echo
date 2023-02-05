@@ -15,6 +15,8 @@ const client = new Client({
 });
 client.whitelist = [];
 
+client.ignorelist = [];
+
 client.on('ready', async () => {
     console.log(`${client.user.username} is ready!`);
 
@@ -72,11 +74,21 @@ client.on('interactionCreate', async (interaction) => {
 client.on('messageCreate', async (message) => {
     if (message.author.id == client.user.id) return;
     if (!client.whitelist.includes(message.channelId)) return;
+    if (!client.ignorelist.includes(message.author.id)) return;
     // if the message mentions the bot, or is replying to the bot, then respond with the channel id
     if ((message.mentions.has(client.user.id) || message.reference?.messageID || message.content.toLowerCase().startsWith('echo:')) && !message.system) {
         console.log(message.author.username)
         let msg;
         // if the message contains a link 
+
+        if (message.content.includes("ignore")) {
+            client.ignorelist.push(message.mentions.users.first().id);
+        } else if (message.content.includes("unignore")) {
+            const index = client.ignorelist.indexOf(5);
+            if (index > -1) { // only splice array when item is found
+              client.ignorelist.splice(index, 1); // 2nd parameter means remove one item only
+            }
+        }
         if (message.content.includes('nofetch')) {
             msg = `${message.content}`
         } else if (message.content.includes('http')) {
@@ -105,17 +117,24 @@ client.on('messageCreate', async (message) => {
         // make the bot start typing
 
         message.channel.sendTyping();
-        const response = await fetch(`https://chat.simo.ng/chat`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "message": msg,
-                conversationId: message.channel.id
-            })
+
+        try {
+            const response = await fetch(`https://chat.simo.ng/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "message": msg,
+                    conversationId: message.channel.id
+                })
+            }
+            )
+        } catch (e) {
+            console.log(e);
+            message.reply("Response from server timed out...");
+            return;
         }
-        )
 
         try {
             const data = await response.json()
@@ -128,6 +147,7 @@ client.on('messageCreate', async (message) => {
             message.reply(`Something went wrong, please dont do that again. \n ${e}`)
         }
     }
+    
 });
 
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;

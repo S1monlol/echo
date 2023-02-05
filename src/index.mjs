@@ -128,7 +128,7 @@ client.on('messageCreate', async (message) => {
             }
 
             console.log(text)
-            msg = `The user linked something, the html for the link is : \n${txt} \n The message was: ${message.content}`
+            msg = `This is the html for the website : \n${txt} \n ${link[0]} The message was: ${message.content}`
         } else {
             msg = `${message.content}`
         }

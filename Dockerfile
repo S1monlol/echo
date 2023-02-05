@@ -14,7 +14,7 @@ RUN npm install
 COPY . .
 
 # Build the bot
-RUN "npm run build"
+RUN npm run build
 
 # Specify the command to run when the container starts
 CMD ["npm", "start"]

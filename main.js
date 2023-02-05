@@ -4,7 +4,6 @@ const client = new Client({
         GatewayIntentBits.MessageContent,
         GatewayIntentBits.GuildMessages,
         GatewayIntentBits.Guilds,
-
     ],
     allowedMentions: {
        parse: [],
@@ -24,14 +23,9 @@ client.on('ready', async () => {
             description: 'Resets the context of the conversation',
         },
     ];
-
     const commands = await client.application?.commands.set(data);
     console.log(commands);
 });
-
-    
-
-
 
 
 // discord slash command for reseting context 
@@ -41,15 +35,13 @@ client.on('interactionCreate', async (interaction) => {
         console.log(interaction.channelId)
         // respond with a deffered response, so the user knows the bot is thinking
         await interaction.deferReply();
-        const w = await fetch(`https://chatgpt.pawan.krd/ask`, {
+        const w = await fetch(`https://chat.simo.ng/delete`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                "key": OPEN_API_KEY,
-                "prompt": "Please forget everything you know from this conversation, and restart with no context",
-                id: interaction.channelId
+                conversationId: interaction.channelId
             })
         }
         )
@@ -80,15 +72,14 @@ client.on('messageCreate', async (message) => {
         // make the bot start typing
 
         message.channel.sendTyping();
-        const response = await fetch(`https://chatgpt.pawan.krd/ask`, {
+        const response = await fetch(`https://chat.simo.ng/chat`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                "key": OPEN_API_KEY,
-                "prompt": msg,
-                id: message.channel.id
+                "message": msg,
+                conversationId: message.channel.id
             })
         }
         )
@@ -100,28 +91,6 @@ client.on('messageCreate', async (message) => {
     }
 });
 
-
 const DISCORD_TOKEN = process.env.DISCORD_TOKEN;
-const OPEN_API_KEY = process.env.OPEN_API_KEY;
-
-
-let response = await fetch(`https://chatgpt.pawan.krd/init`, {
-    method: 'POST',
-    headers: {
-        'Content-Type': 'application/json'
-    },
-    body: JSON.stringify({
-        "key": OPEN_API_KEY,
-        "options": {
-            "instructions": "You are Echo, a large language model, that is the AI assistant of a starship. You are talking to its crew, your purpose is to educate them about humanity as they travel the stars, and provide psychological support for all of the crew. This includes indulging in conversations with the crew, responding with clever but concise responses whenever possible."
-        }
-    })
-}
-)
-
-response = await response.json()
-console.log(response)
-console.log(OPEN_API_KEY)
-
 
 client.login(DISCORD_TOKEN);

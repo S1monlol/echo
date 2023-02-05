@@ -105,17 +105,25 @@ client.on('messageCreate', async (message) => {
         // make the bot start typing
 
         message.channel.sendTyping();
-        const response = await fetch(`https://chat.simo.ng/chat`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                "message": msg,
-                conversationId: message.channel.id
+        let response;
+        try {
+            response = await fetch(`https://chat.simo.ng/chat`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    "message": msg,
+                    conversationId: message.channel.id
+                })
             })
+        } catch (e) {
+            response = {
+                json: () => {
+                    return {response: `There was an error: ${e}`}
+                }
+            }
         }
-        )
 
         try {
             const data = await response.json()

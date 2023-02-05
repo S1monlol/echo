@@ -11,7 +11,7 @@ const client = new Client({
     }
 
 });
-
+client.whitelist = [];
 
 client.on('ready', async () => {
     console.log(`${client.user.username} is ready!`);
@@ -22,6 +22,10 @@ client.on('ready', async () => {
             name: 'resetcontext',
             description: 'Resets the context of the conversation',
         },
+        {
+            name: 'channel',
+            description: 'whitelist the bot to a single channel',
+        }
     ];
     const commands = await client.application?.commands.set(data);
     console.log(commands);
@@ -53,6 +57,11 @@ client.on('interactionCreate', async (interaction) => {
         // edit the response to the user
         await interaction.editReply(removeCommasFromStart(data.response));
         
+    } else if (interaction.commandName === 'channel') {
+        let channel = interaction.channelId;
+        client.whitelist.push(channel)
+        console.log(channel)
+        interaction.reply(`whitelisted channel <#${channel}>`)
     }
 })
 
@@ -60,8 +69,9 @@ client.on('interactionCreate', async (interaction) => {
 
 client.on('messageCreate', async (message) => {
     if (message.author.id == client.user.id) return;
+    if(!client.whitelist.includes(message.channelId)) return;
     // if the message mentions the bot, or is replying to the bot, then respond with the channel id
-    if ((message.mentions.has(client.user.id) || message.reference?.messageID) & !message.system) {
+    if ((message.mentions.has(client.user.id) || message.reference?.messageID || message.content.toLowerCase().startsWith('echo:')) && !message.system) {
         console.log(message.author.username)
         let msg = `
             Respond Conversationally, the name of the person is bellow, the message is next to it. You dont need to say the name of the peson, but you can if it makes sense to, ie if they ask you what their name is.

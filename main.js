@@ -1,4 +1,6 @@
 import { Client, GatewayIntentBits } from 'discord.js';
+import { JSDOM as DOMParser } from 'jsdom';
+
 const client = new Client({
     intents: [
         GatewayIntentBits.MessageContent,
@@ -6,8 +8,8 @@ const client = new Client({
         GatewayIntentBits.Guilds,
     ],
     allowedMentions: {
-       parse: [],
-       repliedUser: true,
+        parse: [],
+        repliedUser: true,
     }
 
 });
@@ -53,10 +55,10 @@ client.on('interactionCreate', async (interaction) => {
         const removeCommasFromStart = str => str.replace(/^,+/, "");
 
         console.log(data.response)
-        
+
         // edit the response to the user
         await interaction.editReply(removeCommasFromStart(data.response));
-        
+
     } else if (interaction.commandName === 'channel') {
         let channel = interaction.channelId;
         client.whitelist.push(channel)
@@ -69,14 +71,36 @@ client.on('interactionCreate', async (interaction) => {
 
 client.on('messageCreate', async (message) => {
     if (message.author.id == client.user.id) return;
-    if(!client.whitelist.includes(message.channelId)) return;
+    if (!client.whitelist.includes(message.channelId)) return;
     // if the message mentions the bot, or is replying to the bot, then respond with the channel id
     if ((message.mentions.has(client.user.id) || message.reference?.messageID || message.content.toLowerCase().startsWith('echo:')) && !message.system) {
         console.log(message.author.username)
+        let msg;
+        // if the message contains a link 
+        if (message.content.includes('nofetch')) {
+            msg = `${message.content}`
+        } else if (message.content.includes('http')) {
+            
+            // get the link
+            let link = message.content.match(/(https?:\/\/[^\s]+)/g);
+            let content = await fetch(link[0])
+            let text = await content.text()
+            // get only content parts of the html, exluding scripts and styles
 
+            let txt = '';
+            const htmlDoc = new DOMParser(text).window.document;
+            for (const element of htmlDoc.querySelectorAll('body')) {
+                // if the element is h1, h2, h3, p, li, or a, then add it to the txt variable
+                if (element.tagName == 'H1' || element.tagName == 'H2' || element.tagName == 'H3' || element.tagName == 'P' || element.tagName == 'LI' || element.tagName == 'A') {
+                    text = text + element.textContent + '\n'
+                }
+            }
 
-
-        let msg = `${message.content}`
+            console.log(text)
+            msg = `The user linked something, the html for the link is : \n${txt} \n The message was: ${message.content}`
+        } else {
+            msg = `${message.content}`
+        }
 
         // make the bot start typing
 
@@ -92,11 +116,17 @@ client.on('messageCreate', async (message) => {
             })
         }
         )
-        const data = await response.json()
-        const removeCommasFromStart = str => str.replace(/^,+/, "");
 
-        console.log(data.response)
-        message.reply(removeCommasFromStart(data.response));
+        try {
+            const data = await response.json()
+            const removeCommasFromStart = str => str.replace(/^,+/, "");
+
+            console.log(data.response)
+            message.reply(removeCommasFromStart(data.response));
+        } catch (e) {
+            console.log(e)
+            message.reply(`Something went wrong, please dont do that again. \n ${e}`)
+        }
     }
 });
 

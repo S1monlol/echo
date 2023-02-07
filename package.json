@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "@fortaine/fetch-event-source": "^3.0.6",
     "@waylaidwanderer/chatgpt-api": "^1.3.1",
     "discord.js": "^14.7.1",
     "dotenv": "^16.0.3",
@@ -12,7 +13,7 @@
     "build": "tsc"
   },
   "devDependencies": {
-    "tsx": "^3.12.2",
+    "tsx": "^3.12.3",
     "typescript": "^4.9.5"
   }
 }

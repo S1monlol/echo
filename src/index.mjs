@@ -1,7 +1,10 @@
 import { Client, GatewayIntentBits } from 'discord.js';
 import { JSDOM as DOMParser } from 'jsdom';
 
-import {config} from "dotenv";
+import { config } from "dotenv";
+
+import { fetchEventSource } from '@fortaine/fetch-event-source';
+
 
 // allow reading from a .env file
 config({});
@@ -24,7 +27,7 @@ if (typeof process.env.WHITELIST !== "undefined") {
     process.env.WHITELIST.split(",").forEach((x) => {
         client.whitelist.push(x);
     })
-    
+
 }
 
 client.ignorelist = [];
@@ -133,10 +136,16 @@ client.on('messageCreate', async (message) => {
             msg = `${message.content}`
         }
 
+
         // make the bot start typing
+
+        let lastEdit = Date.now()
+
+
+
         message.channel.sendTyping();
         try {
-            const response = await fetch(`https://chat.simo.ng/chat`, {
+            const response = await fetchEventSource(`http://localhost:3000/chat`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
@@ -145,13 +154,18 @@ client.on('messageCreate', async (message) => {
                     "message": msg,
                     conversationId: message.channel.id
                 }),
+                onmessage(token) {
+                    console.log(token)
+
+                }
+
             });
 
             const data = await response.json()
             const removeCommasFromStart = str => str.replace(/^,+/, "");
 
             console.log(data.response)
-            message.reply(removeCommasFromStart(data.response));
+            // message.reply(removeCommasFromStart(data.response));
         } catch (e) {
             console.log(e)
             message.reply(`Something went wrong, please dont do that again. \n ${e}`)

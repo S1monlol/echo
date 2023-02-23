@@ -1,3 +1,6 @@
+# Current Not Working !! 
+The openai api for chatgpt is currently down
+
 # Echo - An AI Assistant for your Discord Starship 
 
 Echo is designed to be an AI assistant for a made-up spaceship, providing education about humanity and psychological support for the crew.

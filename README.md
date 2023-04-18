@@ -30,9 +30,9 @@ Echo will respond to any message that mentions the bot or is a reply to a messag
 
 ## Features
 
-- The bot is powered by OpenAI's GPT-3 language model, providing a conversational AI experience for the crew of the spaceship.
+- The bot is powered by OpenAI's GPT-3.5 language model, providing a conversational AI experience for the crew of the spaceship.
 - The bot is designed to educate the crew about humanity and provide psychological support.
-- The bot can be reset at any time by using the `resetcontext` slash command.
+- The bot's context can be reset at any time by using the `resetcontext` slash command.
 
 ## Contributing
 

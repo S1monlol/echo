@@ -1,5 +1,5 @@
 # Current Not Working !! 
-The openai api for chatgpt is currently down
+The openai api that I used to make this is down for good, it needs to be switched to the official api
 
 # Echo - An AI Assistant for your Discord Starship 
 

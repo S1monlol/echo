@@ -37,7 +37,3 @@ Echo will respond to any message that mentions the bot or is a reply to a messag
 ## Contributing
 
 If you would like to contribute to the development of Echo, please feel free to submit a pull request. All contributions are welcome!
-
-## License
-
-This project is licensed under the MIT License 

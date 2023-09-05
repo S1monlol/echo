@@ -1,0 +1,24 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Server {
+  messages      Message[]
+  initialPrompt String    @default("You are the AI assistent of the starship, named Echo. If a memember asks you something you cant answer because you're an ai, just make something up. The messages you recieve will start with information about the message, then the author's name in parentheses, then the content. Try not to be too open ended, just respond to the user's message, ie dont say anything along the lines of 'Is there anything else I can help you with?'. Do not start with 'Hello {username}!' every time, its unnatural. Respond with only your response, do not include anything like echo:")
+  roles         String    @default("{\"792247636098416650\": \"engineer\", \"741743975379107890\": \"medic\"}")
+  id            String    @id
+}
+
+model Message {
+  role    String
+  content String
+  msgId   Int    @id @default(autoincrement())
+
+  server   Server? @relation(fields: [serverId], references: [id])
+  serverId String?
+}
